@@ -1,53 +1,29 @@
 {% extends "base.html" %}
 
-{% load static %}
-
-{% block js %}
-<script src="{% static 'todolist/js/jquery.tablesorter.min.js' %}"></script>
-<script type="text/javascript" id="js">
-$(document).ready(function() {
-  var timeExtraction = function(node) {
-    if ($(node).attr('data-time-in-seconds') !== undefined) {
-      return '-' + node.getAttribute('data-time-in-seconds');
-    } else {
-      return node.innerHTML;
-    }
-  }
-  $("#todolist-overview-table").tablesorter({
-    textExtraction: timeExtraction
-  });
-});
-</script>
-{% endblock %}
-
-{% block css %}
-<link rel="stylesheet" href="{% static 'todolist/css/table.css' %}"> {% endblock %}
-
 {% block body %}
 <section class="header">
-  <h2 class="title">Todolist overview</h2>
-  <div class="row">
-    <div class="three columns value-prop"></div>
-    <div class="six columns">
+  <div class="container col-8">
+    <h2 class="title">Todolist overview</h2>
+    <div class="mb-3">
       <form action="{% url 'todolist:add_todolist' %}" method=post>
         {% csrf_token %}
         <dl>
           <dd>{{ form }}
-          <dt><input type="submit" value="Submit">
+          <dt><input class="btn btn-primary" type="submit" value="Submit">
         </dl>
       </form>
     </div>
   </div>
-  <div class="row">
-    <div class="u-full-width">
-      <h6 class="docs-header todolist-overview">All your todolists</h6>
+  <div class="container col-8">
+    <div>
+      <h6>All your todolists</h6>
       <table id="todolist-overview-table" class="tablesorter">
         <thead>
           <tr>
             <th class='todolist-title'>Todolist title</th>
-            <th># Open</th>
-            <th># Finished</th>
-            <th class="datetime">Created at</th>
+            <th> | Open </th>
+            <th> | Finished </th>
+            <th class="datetime"> | Created at</th>
           </tr>
         </thead>
         <tbody>

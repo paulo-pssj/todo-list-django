@@ -21,13 +21,13 @@ class AccountsTest(TestCase):
     def test_get_register(self):
         """ Check if the register page exists and if its fields are correct """
         response = self.client.get(reverse("auth:register"))
-        self.assertTemplateUsed(response, "register.html")
+        self.assertTemplateUsed(response, "accounts/register.html")
         self.assertIsInstance(response.context['form'], RegisterForm)
         
     def test_get_login(self):
         """ Check if the login page exists and if its fields are correct """
         response = self.client.get(reverse("auth:login"))
-        self.assertTemplateUsed(response, 'login.html')
+        self.assertTemplateUsed(response, 'accounts/login.html')
         self.assertIsInstance(response.context['form'], LoginForm)
         
     def test_register(self):
@@ -42,4 +42,24 @@ class AccountsTest(TestCase):
         login_data = {"username": "test", "password": "test"}
         response = self.client.post(reverse("auth:login"), data=login_data)
         self.assertRedirects(response, "/")
-        self.assertEqual(self.client.session["_auth_user_id"], 1)
+        self.assertEqual(self.client.session["_auth_user_id"], '1')
+        
+    def test_login_with_not_exist_user(self):
+        """ Checks if login accept non existing user """
+        login_data = {"username": "notuser", "password": "notpassword"}
+        response = self.client.post(reverse("auth:login"), data=login_data)
+        error_message = "Incorrect username and/or password."
+        self.assertContains(response, error_message, status_code=200)
+        
+    def test_login_with_incorrect_password(self):
+        """ Checks if login accept incorrect password"""
+        login_data = {"username": "test", "password": "notpassword"}
+        response = self.client.post(reverse("auth:login"), data=login_data)
+        error_message = "Incorrect username and/or password."
+        self.assertContains(response, error_message, status_code=200)
+        
+    def test_logout(self):
+        """Checks if logout redirect for index"""
+        response = self.client.get(reverse("auth:logout"))
+        self.assertRedirects(response, "/")
+        self.assertFalse("_auth_user_id" in self.client.session)
